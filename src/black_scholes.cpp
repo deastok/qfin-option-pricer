@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 #include "option_pricing/black_scholes.hpp"
 
 namespace {
@@ -25,13 +26,23 @@ namespace option_pricing {
         double volatility,
         double time_to_expiry
         ) {
-            (void)spot;
-            (void)strike;
-            (void)rate;
-            (void)volatility;
-            (void)time_to_expiry;
-            return 0.0;
-        }
+            if (time_to_expiry <= 0.0 || volatility <= 0.0) {
+                const double intrinsic = std::max(spot - strike, 0.0);
+                return intrinsic;
+            }
+
+        const double sqrtT = std::sqrt(time_to_expiry);
+        const double d1 = (std::log(spot / strike)
+                           + (rate + 0.5 * volatility * volatility) * time_to_expiry)
+                           / (volatility * sqrtT);
+        const double d2 = d1 - volatility * sqrtT;
+
+        const double Nd1 = normal_cdf(d1);
+        const double Nd2 = normal_cdf(d2);
+        const double discount_factor = std::exp(-rate * time_to_expiry);
+
+        return spot * Nd1 - strike * discount_factor * Nd2;
+    }
 
     double black_scholes_put(
         double spot,
@@ -40,12 +51,21 @@ namespace option_pricing {
         double volatility,
         double time_to_expiry
     ) {
-        (void)spot;
-        (void)strike;
-        (void)rate;
-        (void)volatility;
-        (void)time_to_expiry;
-        return 0.0;
+        if (time_to_expiry <= 0.0 || volatility <= 0.0) {
+            const double intrinsic = std::max(strike - spot, 0.0);
+            return intrinsic;
+        }
+
+        const double sqrtT = std::sqrt(time_to_expiry);
+        const double d1 = (std::log(spot / strike)
+                            + (rate + 0.5 * volatility * volatility) * time_to_expiry)
+                            / (volatility * sqrtT);
+        const double d2 = d1 - volatility * sqrtT;
+
+        const double discount_factor = std::exp(-rate * time_to_expiry);
+
+        return strike * discount_factor * normal_cdf(-d2)
+            - spot * normal_cdf(-d1);
     }
 
 }
