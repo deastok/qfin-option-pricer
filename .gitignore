@@ -1,0 +1,41 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+build/
+cmake-build-*/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.ninja
+*.ninja_deps
+*.ninja_log
+
+# CLion
+.idea/
+/.idea/*
+
+# Logs / Temp
+*.log
+*.swp
+*~
+*.tmp
+
+# Compiled files
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+
+# Tests
+*.gcda
+*.gcno
+*.gcov
